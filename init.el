@@ -6,13 +6,16 @@
    t))
 (package-initialize)
 (package-refresh-contents)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(evil-magit ivy general treemacs magit evil-leader evil use-package)))
+   '(treemacs-evil evil-magit ivy general treemacs magit evil-leader evil use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -21,11 +24,6 @@
  )
 (eval-when-compile
   (require 'use-package))
-
-(use-package general
-  :config
-  (general-evil-setup)
-  (general-auto-unbind-keys))
 
 (use-package evil
   :ensure t
@@ -51,6 +49,8 @@
   (with-eval-after-load 'winum
     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
+  (use-package treemacs-evil
+    :ensure t)
   (progn
     (treemacs-follow-mode t))
   :bind
@@ -58,8 +58,6 @@
 	("M-0" . treemacs-select-window)
 	("C-x t t" . treemacs)))
 
-(global-set-key (kbd "C-h C-f") #'find-function)
-(global-set-key (kbd "C-g") #'evil-force-normal-state)
 (use-package which-key
   :ensure t
   :config
@@ -74,13 +72,4 @@
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t))
 
-(general-create-definer my--leader-def
-  :prefix "SPC")
-
-(my--leader-def
-  :states 'normal
-  :keymaps 'override
-  ":" 'execute-extended-command
-  "g g" 'magit
-  "C-w" 'evil-delete-backward-word
-  "f s" 'save-buffer)
+(load "~/.emacs.d/config/+keys")
