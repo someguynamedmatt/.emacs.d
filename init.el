@@ -99,6 +99,9 @@
   (company-tng-configure-default)
   (add-to-list 'company-backends 'company-keywords)
   (add-to-list 'company-backends 'company-files))
+
+(use-package typescript-mode
+  :hook (typescript-mode . rainbow-delimiters-mode))
   
 (require '+core)
 (require '+keys)
