@@ -31,12 +31,12 @@
 (when (file-exists-p custom-file) (load custom-file))
 
 
-(defconst IS_MAC
+(defconst const--is-mac
   (eq system-type 'darwin)
       "Is this a Mac?")
 
 
-(if (eq IS_MAC t)
+(if (eq const--is-mac t)
     (exec-path-from-shell-initialize))
 
 
@@ -133,7 +133,7 @@
     (setq doom-modeline-buffer-encoding nil))
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  (load-theme 'doom-Iosvkem t)
+  (load-theme 'doom-oceanic-next t)
   (setq doom-themes-treemacs-theme "doom-colors")
   (doom-themes-treemacs-config))
 
@@ -145,7 +145,7 @@
 (require '+ivy)
 (require '+flycheck)
 (require '+typescript)
-(require '+crosshairs)
+(require '+lookup)
  
 (add-hook 'prog-mode-hook 'linum-mode)
 

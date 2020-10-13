@@ -17,6 +17,21 @@
 (global-set-key (kbd "C-c C-d") #'helpful-at-point)
 (global-set-key (kbd "C-g") #'evil-force-normal-state)
 
+;; (with-eval-after-load 'evil-maps
+;;     (define-prefix-command 'my--file-map)
+;;     (define-key evil-normal-state-map "\C-f/" nil)
+;;     (global-set-key (kbd "\C-f") 'my--file-map)
+;;     (global-set-key (kbd "C-f C-f") #'+lookup/file))
+
+(general-create-definer my--file-map
+  :prefix "C-f")
+
+(my--file-map
+ :states 'normal
+ :keymaps 'override
+ "C-f" '(+lookup/file :which-key "lookup file"))
+
+
 ;;
 ;; Leader mappings (SPC)
 ;;
