@@ -5,34 +5,43 @@
    '("melpa" . "https://melpa.org/packages/")
    t))
 (package-initialize)
-(package-refresh-contents)
-
-
-;; TODO: this is only necessary on Mac, I think
-(exec-path-from-shell-initialize)
+;; NOTE: this isn't explicitly necessary, it can be done manually.
+;; Having it enabled slows down startup while the packages refresh.
+;;(package-refresh-contents)
 
 
 (setq user-full-name "Matt Young"
       user-mail-address "dev@mttyng.com")
 
 
-(defconst my--emacs-dir (expand-file-name user-emacs-directory)
+(defconst my--emacs-dir (expand-file-name "~/.emacs.d.vanilla/")
   "The path to the .emacs.d dir")
 
 
 ;; hardcoded for now, replace with my--emacs-dir
-(defconst my--emacs-config-dir (concat "~/.emacs.d.vanilla/" "config/")
+(defconst my--emacs-config-dir (concat my--emacs-dir "config/")
   "The configuration files directory")
+
+;; This puts the custom-set-variables in the custom.el
+;; rather than polluting this file.
+(setq custom-file (expand-file-name "+custom.el" my--emacs-config-dir))
+(when (file-exists-p custom-file) (load custom-file))
+
 
 (defconst IS_MAC
   (eq system-type 'darwin)
       "Is this a Mac?")
 
-(message "IS_MAC %s" IS_MAC)
+
+(if (eq IS_MAC t)
+    (exec-path-from-shell-initialize))
+
+
 ;; If the dir(s) doesn't exist, create it
 (dolist (dir (list my--emacs-config-dir))
   (unless (file-directory-p dir)
     (make-directory dir t)))
+
 
 ;; Push the config directory into the load path to allow for (require 'some-file)
 (eval-and-compile
@@ -54,9 +63,23 @@
 (eval-when-compile
   (require 'use-package))
 
+(use-package helpful)
+
+(use-package rg)
+
+(setq-default indent-tabs-mode nil
+              tab-width 4)
+(setq backward-delete-char-untabify-method 'hungry)
+
 (use-package xclip
   :config
   (xclip-mode 1))
+
+(use-package highlight-indent-guides
+  :config
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (setq highlight-indent-guides-responsive 'top)
+  (setq highlight-indent-guides-method 'bitmap))
 
 (use-package rainbow-delimiters
   :config
@@ -80,18 +103,18 @@
 
 (use-package projectile
   :config
+  (setq projectile-completion-system 'ivy)
   (setq projectile-project-search-path '("~/code"))
   (projectile-mode +1))
 
 (defmacro after (feature &rest body)
   "Executes BODY after FEATURE has been loaded.
-FEATURE may be any one of:
+    FEATURE may be any one of:
     'evil            => (with-eval-after-load 'evil BODY)
     \"evil-autoloads\" => (with-eval-after-load \"evil-autolaods\" BODY)
     [evil cider]     => (with-eval-after-load 'evil
                           (with-eval-after-load 'cider
-                            BODY))
-"
+                            BODY))"
   (declare (indent 1))
   (cond
    ((vectorp feature)
@@ -105,6 +128,21 @@ FEATURE may be any one of:
    (t
     `(with-eval-after-load ,feature ,@body))))
   
+(use-package doom-themes
+  :config
+  (use-package doom-modeline
+    :config
+    (doom-modeline-mode 1)
+    (setq doom-modeline-buffer-modification-icon nil)
+    (setq doom-modeline-percent-position nil)
+    (setq line-number-mode nil)
+    (setq doom-modeline-buffer-encoding nil))
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-Iosvkem t)
+  (setq doom-themes-treemacs-theme "doom-colors")
+  (doom-themes-treemacs-config))
+
 (require '+core)
 (require '+evil)
 (require '+treemacs)
@@ -113,10 +151,14 @@ FEATURE may be any one of:
 (require '+ivy)
 (require '+flycheck)
 (require '+typescript)
+(require '+crosshairs)
+ 
+(add-hook 'prog-mode-hook 'linum-mode)
 
 (message (format "Started in %.2f seconds with %d garbage collections."
                  (float-time
-                  (time-subtract after-init-time before-init-time)) gcs-done))
+                  (time-subtract after-init-time before-init-time))
+                 gcs-done))
 
 (defun my/reload-init ()
   "Reload the init.el file"
@@ -127,6 +169,11 @@ FEATURE may be any one of:
   "Open the init.el file"
   (interactive)
   (find-file "~/.emacs.d.vanilla/init.el"))
+
+(defun my/open-keys ()
+  "Open the +keys.el file"
+  (interactive)
+  (find-file "~/.emacs.d.vanilla/config/+keys.el"))
 
 (defun my/delete-word (arg)
   "Delete characters forward until encountering the end of a word.

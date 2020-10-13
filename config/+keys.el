@@ -13,7 +13,8 @@
 ;;
 
 ;; Global mappings
-(global-set-key (kbd "C-h C-f") #'describe-function)
+(global-set-key (kbd "C-h C-f") #'helpful-function)
+(global-set-key (kbd "C-c C-d") #'helpful-at-point)
 (global-set-key (kbd "C-g") #'evil-force-normal-state)
 
 ;;
@@ -27,6 +28,8 @@
   :states 'normal
   :keymaps 'override
   "/" '(evilnc-comment-or-uncomment-lines :which-key "comment toggle")
+  "p" '(projectile-command-map :which-key "projectile")
+  "SPC" '(projectile-find-file :which-key "find file in project")
   "g" '(:ignore t :which-key "magit")
     "g g" '(magit :which-key: "magit status")
 
@@ -35,6 +38,7 @@
 
   "i" '(:ignore t :which-key "init file")
     "i r" '(my/reload-init :which-key "reload init.el")
+    "i k" '(my/open-keys :which-key "open config/+keys.el")
     "i o" '(my/open-init :which-key "open init.el"))
 
 ;; evil-motion mode mappings (visual, normal, etc.)
