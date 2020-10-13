@@ -4,12 +4,21 @@
    'package-archives
    '("melpa" . "https://melpa.org/packages/")
    t))
-
 (package-initialize)
 (package-refresh-contents)
 
+
+;; TODO: this is only necessary on Mac, I think
+(exec-path-from-shell-initialize)
+
+
+(setq user-full-name "Matt Young"
+      user-mail-address "dev@mttyng.com")
+
+
 (defconst my--emacs-dir (expand-file-name user-emacs-directory)
   "The path to the .emacs.d dir")
+
 
 ;; hardcoded for now, replace with my--emacs-dir
 (defconst my--emacs-config-dir (concat "~/.emacs.d.vanilla/" "config/")
@@ -19,6 +28,7 @@
   (eq system-type 'darwin)
       "Is this a Mac?")
 
+(message "IS_MAC %s" IS_MAC)
 ;; If the dir(s) doesn't exist, create it
 (dolist (dir (list my--emacs-config-dir))
   (unless (file-directory-p dir)
@@ -44,10 +54,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package lsp-mode
-  :config
-  (add-hook 'prog-mode-hook #'lsp))
-
 (use-package xclip
   :config
   (xclip-mode 1))
@@ -56,38 +62,10 @@
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-(use-package evil
-  :ensure t
-  :after (general)
-  :config
-  (evil-mode 1)
-  (use-package evil-magit
-    :ensure t)
-  (use-package evil-easymotion
-    :ensure t
-    :config
-    (evilem-default-keybindings "gs"))
-  (use-package evil-leader
-    :ensure t
-    :config
-    (global-evil-leader-mode t)))
-
 (add-hook 'prog-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
 (use-package magit
   :ensure t)
-
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (use-package treemacs-evil
-    :ensure t)
-  (progn
-    (treemacs-follow-mode t)))
 
 (use-package company
   :after evil
@@ -100,12 +78,41 @@
   (add-to-list 'company-backends 'company-keywords)
   (add-to-list 'company-backends 'company-files))
 
-(use-package typescript-mode
-  :hook (typescript-mode . rainbow-delimiters-mode))
+(use-package projectile
+  :config
+  (setq projectile-project-search-path '("~/code"))
+  (projectile-mode +1))
+
+(defmacro after (feature &rest body)
+  "Executes BODY after FEATURE has been loaded.
+FEATURE may be any one of:
+    'evil            => (with-eval-after-load 'evil BODY)
+    \"evil-autoloads\" => (with-eval-after-load \"evil-autolaods\" BODY)
+    [evil cider]     => (with-eval-after-load 'evil
+                          (with-eval-after-load 'cider
+                            BODY))
+"
+  (declare (indent 1))
+  (cond
+   ((vectorp feature)
+    (let ((prog (macroexp-progn body)))
+      (cl-loop for f across feature
+               do
+               (progn
+                 (setq prog (append `(',f) `(,prog)))
+                 (setq prog (append '(with-eval-after-load) prog))))
+      prog))
+   (t
+    `(with-eval-after-load ,feature ,@body))))
   
 (require '+core)
+(require '+evil)
+(require '+treemacs)
+(require '+lsp)
 (require '+keys)
 (require '+ivy)
+(require '+flycheck)
+(require '+typescript)
 
 (message (format "Started in %.2f seconds with %d garbage collections."
                  (float-time
@@ -121,8 +128,19 @@
   (interactive)
   (find-file "~/.emacs.d.vanilla/init.el"))
 
-(defun my/treemacs-find-and-focus ()
-  "Find current-buffer's file in treemacs window"
-  (interactive)
-  (treemacs-find-file)
-  (treemacs-select-window))
+(defun my/delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
+With argument, do this that many times."
+  (interactive "p")
+  (if (use-region-p)
+      (delete-region (region-beginning) (region-end))
+    (delete-region (point) (progn (forward-word arg) (point)))))
+
+(defun my/backward-delete-word (arg)
+  "Delete characters backward until encountering the end of a word.
+With argument, do this that many times."
+  (interactive "p")
+  (my/delete-word (- arg)))
+
+;; Display the time in the modeline
+(display-time-mode 1)

@@ -26,16 +26,13 @@
 (my--leader
   :states 'normal
   :keymaps 'override
-  ":" '(execute-extended-command :which-key "M-x :")
+  "/" '(evilnc-comment-or-uncomment-lines :which-key "comment toggle")
   "g" '(:ignore t :which-key "magit")
     "g g" '(magit :which-key: "magit status")
 
   "b" '(:ignore t :which-key "buffers")
-    "b p" '(previous-buffer :which-key "previous buffer")
-    "b n" '(next-buffer :which-key "next buffer")
     "b s" '(save-buffer :which-key "save buffer")
 
-  "C-w" '(evil-delete-backward-word :which-key "delete word backwards")
   "i" '(:ignore t :which-key "init file")
     "i r" '(my/reload-init :which-key "reload init.el")
     "i o" '(my/open-init :which-key "open init.el"))
@@ -44,9 +41,20 @@
 (my--leader
   :states 'motion
   :keymaps 'override
+  ":" '(execute-extended-command :which-key "M-x :")
+  "C-w" '(my/backward-delete-word :which-key "delete word backwards")
+  "b" '(:ignore t :which-key "buffers")
+    "b p" '(previous-buffer :which-key "previous buffer")
+    "b n" '(next-buffer :which-key "next buffer")
+
   "t" '(:ignore t :which-key "treemacs")
     "t t" '(treemacs :which-key "toggle treemacs")
     "t f" '(treemacs :which-key "target file"))
+
+(my--leader
+  :states 'visual
+  :keymaps 'override
+  "/" '(comment-or-uncomment-region :which-key "comment toggle"))
 
 
 ;;
