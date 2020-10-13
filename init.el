@@ -22,6 +22,9 @@
 (defconst my--emacs-config-dir (concat my--emacs-dir "config/")
   "The configuration files directory")
 
+(defconst my--init-file  (concat my--emacs-dir "init.el")
+  "init.el file")
+
 ;; This puts the custom-set-variables in the custom.el
 ;; rather than polluting this file.
 (setq custom-file (expand-file-name "+custom.el" my--emacs-config-dir))
@@ -47,28 +50,19 @@
 (eval-and-compile
   (push my--emacs-config-dir load-path))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(treemacs-evil evil-magit ivy general treemacs magit evil-leader evil use-package)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 (eval-when-compile
   (require 'use-package))
 
 (use-package helpful)
 
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1))
+
 (use-package rg)
 
-(setq-default indent-tabs-mode nil
-              tab-width 4)
+(setq-default tab-width 2)
+(setq tab-width 2)
 (setq backward-delete-char-untabify-method 'hungry)
 
 (use-package xclip
@@ -155,25 +149,26 @@
  
 (add-hook 'prog-mode-hook 'linum-mode)
 
-(message (format "Started in %.2f seconds with %d garbage collections."
+(message (format "[loaded]: %.2f seconds w/ %d garbage collections."
                  (float-time
                   (time-subtract after-init-time before-init-time))
                  gcs-done))
 
+
 (defun my/reload-init ()
   "Reload the init.el file"
   (interactive)
-  (load-file "~/.emacs.d.vanilla/init.el"))
+  (load-file my--init-file))
 
 (defun my/open-init ()
   "Open the init.el file"
   (interactive)
-  (find-file "~/.emacs.d.vanilla/init.el"))
+  (find-file my--init-file))
 
 (defun my/open-keys ()
   "Open the +keys.el file"
   (interactive)
-  (find-file "~/.emacs.d.vanilla/config/+keys.el"))
+  (find-file (concat my--emacs-config-dir "+keys.el")))
 
 (defun my/delete-word (arg)
   "Delete characters forward until encountering the end of a word.
