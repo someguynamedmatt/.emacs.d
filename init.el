@@ -14,16 +14,21 @@
       user-mail-address "dev@mttyng.com")
 
 
+;; replace with my--emacs-dir
 (defconst my--emacs-dir (expand-file-name "~/.emacs.d.vanilla/")
   "The path to the .emacs.d dir")
 
 
-;; hardcoded for now, replace with my--emacs-dir
 (defconst my--emacs-config-dir (concat my--emacs-dir "config/")
   "The configuration files directory")
 
+
+(defconst my--emacs-modules-dir (concat my--emacs-dir "modules/")
+  "The modules (helper funcs) directory")
+
 (defconst my--init-file  (concat my--emacs-dir "init.el")
   "init.el file")
+
 
 ;; This puts the custom-set-variables in the custom.el
 ;; rather than polluting this file.
@@ -46,8 +51,9 @@
     (make-directory dir t)))
 
 
-;; Push the config directory into the load path to allow for (require 'some-file)
+;; Push the config directories into the load path to allow for (require 'some-file)
 (eval-and-compile
+  (push my--emacs-modules-dir load-path)
   (push my--emacs-config-dir load-path))
 
 (eval-when-compile
@@ -60,6 +66,7 @@
   (editorconfig-mode 1))
 
 (use-package rg)
+(use-package ripgrep)
 
 (setq-default tab-width 2)
 (setq tab-width 2)

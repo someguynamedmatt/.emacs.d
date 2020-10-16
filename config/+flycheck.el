@@ -4,8 +4,8 @@
   :config
   (setq flycheck-standard-error-navigation t)
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
   (when (display-graphic-p)
-    (setq flycheck-pos-tip-timeout -1)
     (flycheck-pos-tip-mode)))
 
 (provide '+flycheck)

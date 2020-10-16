@@ -8,20 +8,22 @@
   (setq which-key-idle-delay 0.2)
   (setq which-key-min-display-lines 4)
   (which-key-mode))
+
 ;;
 ;; Custom mappings
 ;;
 
 ;; Global mappings
 (global-set-key (kbd "C-h C-f") #'helpful-function)
-(global-set-key (kbd "C-c C-d") #'helpful-at-point)
+(global-set-key (kbd "C-h C-d") #'helpful-at-point)
 (global-set-key (kbd "C-g") #'evil-force-normal-state)
+(global-set-key (kbd "C-w") #'my/backward-delete-word)
 
-;; (with-eval-after-load 'evil-maps
-;;     (define-prefix-command 'my--file-map)
-;;     (define-key evil-normal-state-map "\C-f/" nil)
-;;     (global-set-key (kbd "\C-f") 'my--file-map)
-;;     (global-set-key (kbd "C-f C-f") #'+lookup/file))
+(general-define-key
+ :states 'normal
+ "*" '(swiper-thing-at-point :which-key "swiper at point")
+ "/" '(swiper :which-key "swiper"))
+
 
 (general-create-definer my--file-map
   :prefix "C-f")
@@ -29,7 +31,7 @@
 (my--file-map
  :states 'normal
  :keymaps 'override
- "C-f" '(+lookup/file :which-key "lookup file"))
+ "C-f" '(+lookup/file :which-key "goto file"))
 
 
 ;;
@@ -43,11 +45,14 @@
   :states 'normal
   :keymaps 'override
   "/" '(evilnc-comment-or-uncomment-lines :which-key "comment toggle")
+  "," '(ibuffer :which-key "ibuffer")
   "p" '(projectile-command-map :which-key "projectile")
-  "SPC" '(projectile-find-file :which-key "find file in project")
+  "SPC" '(projectile-find-file :which-key "projectile find file")
   "g" '(:ignore t :which-key "magit")
-    "g g" '(magit :which-key: "magit status")
+    "g g" '(magit :which-key "magit status")
 
+  "f" '(:ignore t :which-key "file")
+    "f s" '(save-buffer :which-key "save file")
   "b" '(:ignore t :which-key "buffers")
     "b s" '(save-buffer :which-key "save buffer")
 
@@ -60,15 +65,23 @@
 (my--leader
   :states 'motion
   :keymaps 'override
-  ":" '(execute-extended-command :which-key "M-x :")
-  "C-w" '(my/backward-delete-word :which-key "delete word backwards")
+  ":" '(counsel-M-x :which-key "M-x :")
   "b" '(:ignore t :which-key "buffers")
     "b p" '(previous-buffer :which-key "previous buffer")
     "b n" '(next-buffer :which-key "next buffer")
 
   "t" '(:ignore t :which-key "treemacs")
     "t t" '(treemacs :which-key "toggle treemacs")
-    "t f" '(treemacs :which-key "target file"))
+    "t f" '(treemacs :which-key "target file")
+
+  "1" '(winum-select-window-1 :which-key "select window 1")
+  "2" '(winum-select-window-2 :which-key "select window 2")
+  "3" '(winum-select-window-3 :which-key "select window 3")
+  "4" '(winum-select-window-4 :which-key "select window 4")
+  "5" '(winum-select-window-5 :which-key "select window 5")
+  "6" '(winum-select-window-6 :which-key "select window 6")
+  "7" '(winum-select-window-7 :which-key "select window 7"))
+
 
 (my--leader
   :states 'visual
@@ -86,6 +99,7 @@
 (my--sub-leader
  :states 'normal
  :keymaps 'override
+ "SPC" '(evil-ex-nohighlight :which "no highlight")
  "s" '(split-window-vertically :which-key "split vertically")
  "v" '(split-window-horizontally :which-key "split horizontally"))
 
@@ -93,6 +107,7 @@
 (my--sub-leader
  :states 'motion
  :keymaps 'override
+ "a" '(+ivy/project-search :which-key "search project")
  "n" '(treemacs :which-key "toggle treemacs")
  "f" '(treemacs-select-window :which-key "focus treemacs window"))
 

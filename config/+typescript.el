@@ -11,6 +11,7 @@
     (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))))
 
 (add-hook 'web-mode-hook #'my/lsp-activate)
+(add-hook 'typescript-mode-hook #'my/lsp-activate)
 
 (defun my/enable-prettier-js-mode ()
   "Maybe enable `prettier-js-mode'.  Used with `web-mode-hook'."
@@ -19,8 +20,7 @@
     (prettier-js-mode 1)))
 
 (after 'web-mode (define-derived-mode typescript-tsx-mode web-mode "typescript-tsx")
-       (add-hook 'typescript-mode-hook #'my/lsp-activate)
-       (add-hook 'typescript-mode-hook #'(message "LSP ACTIVE")))
+       (add-hook 'typescript-mode-hook #'my/lsp-activate))
 
 (eval-after-load 'web-mode
     '(progn
